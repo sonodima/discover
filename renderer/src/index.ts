@@ -1,4 +1,15 @@
 import * as PIXI from "pixi.js";
+import {
+  StringInstruction,
+  PolygonInstruction,
+  RectangleInstruction,
+  CircleInstruction,
+  RenderQueue,
+  InstructionType,
+} from "./types";
+
+document.body.style.overflow = "hidden";
+document.body.style.margin = "0px";
 
 const app = new PIXI.Application({
   width: window.innerWidth,
@@ -8,76 +19,28 @@ const app = new PIXI.Application({
 });
 document.body.appendChild(app.view);
 
-enum InstructionType {
-  String,
-  Polygon,
-  Rectangle,
-  Circle,
-}
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Instruction {
-  type: InstructionType;
-  data: any;
-}
-
-interface RenderQueue {
-  instructions: Instruction[];
-}
-
-interface StringInstruction {
-  position: Point;
-  text: string;
-}
-
-interface PolygonInstruction {
-  points: Point[];
-  color: number;
-  alpha: number;
-  fill: boolean;
-  thickness: number | undefined;
-}
-
-interface RectangleInstruction {
-  start: Point;
-  end: Point;
-  color: number;
-  alpha: number;
-  fill: boolean;
-  thickness: number | undefined;
-  radius: number | undefined;
-}
-
-interface CircleInstruction {
-  position: Point;
-  radius: number;
-  color: number;
-  alpha: number;
-  fill: boolean;
-  thickness: number | undefined;
-}
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 const drawString = (data: StringInstruction) => {
-  const child = new PIXI.Text(data.text);
-  child.x = data.position.x;
-  child.y = data.position.y;
+  const style = new PIXI.TextStyle({
+    fill: data.color,
+  });
+
+  if (data.stroke) {
+    style.stroke = data.strokeColor;
+    style.strokeThickness = data.strokeThickness;
+  }
+
+  const child = new PIXI.Text(data.text, style);
+  child.alpha = data.alpha;
+  child.x = data.x;
+  child.y = data.y;
   app.stage.addChild(child);
 };
 
 const drawPolygon = (graphics: PIXI.Graphics, data: PolygonInstruction) => {
-  if (data.points.length < 2) {
-    return;
-  }
-
-  let path: number[] = [];
-  data.points.forEach((point) => {
-    path.push(point.x, point.y);
-  });
-
   if (data.fill) {
     graphics.beginFill(data.color, data.alpha);
     graphics.lineStyle(0);
@@ -85,7 +48,7 @@ const drawPolygon = (graphics: PIXI.Graphics, data: PolygonInstruction) => {
     graphics.lineStyle(data.thickness, data.color, data.alpha);
   }
 
-  graphics.drawPolygon(path);
+  graphics.drawPolygon(data.path);
 
   if (data.fill) {
     graphics.endFill();
@@ -102,19 +65,14 @@ const drawRectangle = (graphics: PIXI.Graphics, data: RectangleInstruction) => {
 
   if (data.radius) {
     graphics.drawRoundedRect(
-      data.start.x,
-      data.start.y,
-      data.end.x - data.start.x,
-      data.end.y - data.start.y,
+      data.x1,
+      data.y2,
+      data.x2 - data.x1,
+      data.y2 - data.y1,
       data.radius
     );
   } else {
-    graphics.drawRect(
-      data.start.x,
-      data.start.y,
-      data.end.x - data.start.x,
-      data.end.y - data.start.y
-    );
+    graphics.drawRect(data.x1, data.y2, data.x2 - data.x1, data.y2 - data.y1);
   }
 
   if (data.fill) {
@@ -130,44 +88,69 @@ const drawCircle = (graphics: PIXI.Graphics, data: CircleInstruction) => {
     graphics.lineStyle(data.thickness, data.color, data.alpha);
   }
 
-  graphics.drawCircle(data.position.x, data.position.y, data.radius);
+  graphics.drawCircle(data.x, data.y, data.radius);
 
   if (data.fill) {
     graphics.endFill();
   }
 };
 
-const socket = new WebSocket("ws://localhost:4001/ws/queue");
+const connect = async () => {
+  let socket: WebSocket;
 
-socket.addEventListener("open", (event) => {});
+  await new Promise((resolve) => {
+    socket = new WebSocket("ws://localhost:4001/ws/queue");
 
-socket.addEventListener("message", (event: MessageEvent<string>) => {
-  const queue: RenderQueue = JSON.parse(event.data);
-  app.stage.removeChildren();
+    socket.addEventListener("open", (event) => {
+      console.log("opened");
+      resolve(true);
+    });
 
-  const graphics = new PIXI.Graphics();
+    socket.addEventListener("close", async () => {
+      app.stage.removeChildren();
+      await sleep(1000);
+      connect();
+      resolve(false);
+    });
 
-  queue.instructions.forEach((instruction) => {
-    switch (instruction.type) {
-      case InstructionType.String:
-        drawString(instruction.data);
-        break;
+    socket.addEventListener("error", async () => {
+      app.stage.removeChildren();
+      await sleep(1000);
+      connect();
+      resolve(false);
+    });
 
-      case InstructionType.Polygon:
-        drawPolygon(graphics, instruction.data);
-        break;
+    socket.addEventListener("message", (event: MessageEvent<string>) => {
+      const queue: RenderQueue = JSON.parse(event.data);
+      app.stage.removeChildren();
 
-      case InstructionType.Rectangle:
-        drawRectangle(graphics, instruction.data);
-        break;
+      const graphics = new PIXI.Graphics();
 
-      case InstructionType.Circle:
-        drawCircle(graphics, instruction.data);
+      queue.instructions.forEach((instruction) => {
+        switch (instruction.type) {
+          case InstructionType.String:
+            drawString(instruction.data);
+            break;
 
-      default:
-        break;
-    }
+          case InstructionType.Polygon:
+            drawPolygon(graphics, instruction.data);
+            break;
+
+          case InstructionType.Rectangle:
+            drawRectangle(graphics, instruction.data);
+            break;
+
+          case InstructionType.Circle:
+            drawCircle(graphics, instruction.data);
+
+          default:
+            break;
+        }
+      });
+
+      app.stage.addChild(graphics);
+    });
   });
+};
 
-  app.stage.addChild(graphics);
-});
+connect();

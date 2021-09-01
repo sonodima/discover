@@ -11,62 +11,10 @@ import (
 
 import "C"
 
-type InstructionType int
+var connection *websocket.Conn
+var queue *RenderQueue
 
-const (
-	String InstructionType = iota
-	Polygon
-	Rectangle
-	Circle
-)
-
-type Instruction struct {
-	Type InstructionType `json:"type"`
-	Data interface{}     `json:"data"`
-}
-
-type RenderQueue struct {
-	Instructions []Instruction `json:"instructions"`
-}
-
-type Point struct {
-	X int `json:"x"`
-	Y int `json:"y"`
-}
-
-type StringInstruction struct {
-	Position Point  `json:"position"`
-	Text     string `json:"text"`
-}
-
-type PolygonInstruction struct {
-	Points    []Point `json:"points"`
-	Color     int     `json:"color"`
-	Alpha     float32 `json:"alpha"`
-	Fill      bool    `json:"fill"`
-	Thickness int     `json:"thickness"`
-}
-
-type RectangleInstruction struct {
-	Start     Point   `json:"start"`
-	End       Point   `json:"end"`
-	Color     int     `json:"color"`
-	Alpha     float32 `json:"alpha"`
-	Fill      bool    `json:"fill"`
-	Thickness int     `json:"thickness"`
-	Radius    int     `json:"radius"`
-}
-
-type CircleInstruction struct {
-	Position  Point   `json:"position"`
-	Radius    int     `json:"radius"`
-	Color     int     `json:"color"`
-	Alpha     float32 `json:"alpha"`
-	Fill      bool    `json:"fill"`
-	Thickness int     `json:"thickness"`
-}
-
-func handleUpgrade(c *fiber.Ctx) error {
+func upgradeHandler(c *fiber.Ctx) error {
 	if websocket.IsWebSocketUpgrade(c) {
 		c.Locals("allowed", true)
 		return c.Next()
@@ -75,15 +23,16 @@ func handleUpgrade(c *fiber.Ctx) error {
 	return fiber.ErrUpgradeRequired
 }
 
-var connection *websocket.Conn
-var queue *RenderQueue
-
-func handleQueue(c *websocket.Conn) {
+func queueHandler(c *websocket.Conn) {
 	connection = c
 
 	for {
 		time.Sleep(200)
 	}
+}
+
+func listenRoutine(app *fiber.App, port int) {
+	app.Listen(fmt.Sprintf(":%d", port))
 }
 
 //export Start
@@ -93,10 +42,10 @@ func Start(port int) bool {
 	app := fiber.New()
 	app.Static("/", "./renderer/dist")
 
-	app.Use("/ws", handleUpgrade)
-	app.Get("/ws/queue", websocket.New(handleQueue))
+	app.Use("/ws", upgradeHandler)
+	app.Get("/ws/queue", websocket.New(queueHandler))
 
-	go app.Listen(fmt.Sprintf(":%d", port))
+	go listenRoutine(app, port)
 
 	/*
 		err := app.Listen(fmt.Sprintf(":%d", port))
@@ -135,24 +84,17 @@ func SubmitQueue() bool {
 }
 
 //export DrawString
-func DrawString(x int, y int, text *C.char) {
+func DrawString(x int, y int, text *C.char, color int, alpha float32, stroke bool, strokeColor int, strokeThickness int) {
 	converted := C.GoString(text)
-	data := StringInstruction{Point{x, y}, converted}
+	data := StringInstruction{x, y, converted, color, alpha, stroke, strokeColor, strokeThickness}
 	instruction := Instruction{String, data}
 
 	queue.Instructions = append(queue.Instructions, instruction)
 }
 
 //export DrawPolygon
-func DrawPolygon(a []int, color int, alpha float32, fill bool, thickness int) {
-	points := make([]Point, len(a)/2)
-
-	for i := 0; i < len(a)/2; i++ {
-		point := Point{a[i*2], a[(i*2)+1]}
-		points = append(points, point)
-	}
-
-	data := PolygonInstruction{points, color, alpha, fill, thickness}
+func DrawPolygon(path []int, color int, alpha float32, fill bool, thickness int) {
+	data := PolygonInstruction{path, color, alpha, fill, thickness}
 	instruction := Instruction{Polygon, data}
 
 	queue.Instructions = append(queue.Instructions, instruction)
@@ -160,8 +102,16 @@ func DrawPolygon(a []int, color int, alpha float32, fill bool, thickness int) {
 
 //export DrawRectangle
 func DrawRectangle(x1 int, y1 int, x2 int, y2 int, color int, alpha float32, fill bool, thickness int, radius int) {
-	data := RectangleInstruction{Point{x1, y1}, Point{x2, y2}, color, alpha, fill, thickness, radius}
+	data := RectangleInstruction{x1, y1, x2, y2, color, alpha, fill, thickness, radius}
 	instruction := Instruction{Rectangle, data}
+
+	queue.Instructions = append(queue.Instructions, instruction)
+}
+
+//export DrawCircle
+func DrawCircle(x int, y int, radius int, color int, alpha float32, fill bool, thickness int) {
+	data := CircleInstruction{x, y, radius, color, alpha, fill, thickness}
+	instruction := Instruction{Circle, data}
 
 	queue.Instructions = append(queue.Instructions, instruction)
 }
