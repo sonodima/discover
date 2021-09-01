@@ -68,7 +68,11 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern __declspec(dllexport) GoInt DoubleIt(GoInt x);
+extern __declspec(dllexport) GoUint8 Start(GoInt port);
+extern __declspec(dllexport) GoUint8 SubmitQueue();
+extern __declspec(dllexport) void DrawString(GoInt x, GoInt y, char* text);
+extern __declspec(dllexport) void DrawPolygon(GoSlice a, GoInt color, GoFloat32 alpha, GoUint8 fill, GoInt thickness);
+extern __declspec(dllexport) void DrawRectangle(GoInt x1, GoInt y1, GoInt x2, GoInt y2, GoInt color, GoFloat32 alpha, GoUint8 fill, GoInt thickness, GoInt radius);
 
 #ifdef __cplusplus
 }

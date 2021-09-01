@@ -139,9 +139,7 @@ const drawCircle = (graphics: PIXI.Graphics, data: CircleInstruction) => {
 
 const socket = new WebSocket("ws://localhost:4001/ws/queue");
 
-socket.addEventListener("open", (event) => {
-  socket.send("Socket connection was opened");
-});
+socket.addEventListener("open", (event) => {});
 
 socket.addEventListener("message", (event: MessageEvent<string>) => {
   const queue: RenderQueue = JSON.parse(event.data);

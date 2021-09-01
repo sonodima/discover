@@ -3,18 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 )
 
 import "C"
-
-//export DoubleIt
-func DoubleIt(x int) int {
-	return x * 2
-}
 
 type InstructionType int
 
@@ -71,70 +66,112 @@ type CircleInstruction struct {
 	Thickness int     `json:"thickness"`
 }
 
-func main() {
-	app := fiber.New()
+func handleUpgrade(c *fiber.Ctx) error {
+	if websocket.IsWebSocketUpgrade(c) {
+		c.Locals("allowed", true)
+		return c.Next()
+	}
 
+	return fiber.ErrUpgradeRequired
+}
+
+var connection *websocket.Conn
+var queue *RenderQueue
+
+func handleQueue(c *websocket.Conn) {
+	connection = c
+
+	for {
+		time.Sleep(200)
+	}
+}
+
+//export Start
+func Start(port int) bool {
+	queue = &RenderQueue{}
+
+	app := fiber.New()
 	app.Static("/", "./renderer/dist")
 
-	app.Use("/ws", func(c *fiber.Ctx) error {
-		// IsWebSocketUpgrade returns true if the client
-		// requested upgrade to the WebSocket protocol.
-		if websocket.IsWebSocketUpgrade(c) {
-			c.Locals("allowed", true)
-			return c.Next()
+	app.Use("/ws", handleUpgrade)
+	app.Get("/ws/queue", websocket.New(handleQueue))
+
+	go app.Listen(fmt.Sprintf(":%d", port))
+
+	/*
+		err := app.Listen(fmt.Sprintf(":%d", port))
+		if err != nil {
+			fmt.Println("[dicrod]", err.Error())
+			return false
 		}
-		return fiber.ErrUpgradeRequired
-	})
 
-	app.Get("/ws/queue", websocket.New(func(c *websocket.Conn) {
-		var (
-			mt  int
-			msg []byte
-			err error
-		)
+		fmt.Println("[dicrod] server listening on port ", port)
+	*/
 
-		for {
-			if mt, msg, err = c.ReadMessage(); err != nil {
-				log.Println("read:", err)
-				break
-			}
-			log.Printf("recv: %s", msg)
+	return true
+}
 
-			queue := RenderQueue{}
-			/*
-				instruction := StringInstruction{Position: Point{X: 40, Y: 40}, Text: "niggers"}
-				a := Instruction{Type: String, Data: instruction}
-			*/
+//export SubmitQueue
+func SubmitQueue() bool {
+	if connection == nil {
+		return false
+	}
 
-			/*
-				points := make([]Point, 0)
-				points = append(points, Point{X: 40, Y: 40})
-				points = append(points, Point{X: 200, Y: 40})
-				points = append(points, Point{X: 200, Y: 200})
-				points = append(points, Point{X: 40, Y: 200})
+	marshaled, err := json.Marshal(queue)
+	if err != nil {
+		fmt.Println("[dicord]", err)
+		return false
+	}
 
-				instruction := PolygonInstruction{Points: points, Color: 0xFF0000, Alpha: 1.0, Fill: false, Thickness: 4}
-				a := Instruction{Type: Polygon, Data: instruction}
-			*/
+	err = connection.WriteMessage(1, marshaled)
+	if err != nil {
+		fmt.Println("[dicord]", err)
+		connection = nil
+		return false
+	}
 
-			instruction := RectangleInstruction{Start: Point{X: 40, Y: 40}, End: Point{X: 100, Y: 140}, Color: 0xFF00FF, Alpha: 1.0, Fill: true, Radius: 30}
-			a := Instruction{Type: Rectangle, Data: instruction}
+	queue.Instructions = nil
+	return true
+}
 
-			queue.Instructions = append(queue.Instructions, a)
+//export DrawString
+func DrawString(x int, y int, text *C.char) {
+	converted := C.GoString(text)
+	data := StringInstruction{Point{x, y}, converted}
+	instruction := Instruction{String, data}
 
-			b, err := json.Marshal(queue)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Println(string(b))
+	queue.Instructions = append(queue.Instructions, instruction)
+}
 
-			if err = c.WriteMessage(mt, b); err != nil {
-				log.Println("write:", err)
-				break
-			}
-		}
-	}))
+//export DrawPolygon
+func DrawPolygon(a []int, color int, alpha float32, fill bool, thickness int) {
+	points := make([]Point, len(a)/2)
 
-	app.Listen(":4001")
+	for i := 0; i < len(a)/2; i++ {
+		point := Point{a[i*2], a[(i*2)+1]}
+		points = append(points, point)
+	}
+
+	data := PolygonInstruction{points, color, alpha, fill, thickness}
+	instruction := Instruction{Polygon, data}
+
+	queue.Instructions = append(queue.Instructions, instruction)
+}
+
+//export DrawRectangle
+func DrawRectangle(x1 int, y1 int, x2 int, y2 int, color int, alpha float32, fill bool, thickness int, radius int) {
+	data := RectangleInstruction{Point{x1, y1}, Point{x2, y2}, color, alpha, fill, thickness, radius}
+	instruction := Instruction{Rectangle, data}
+
+	queue.Instructions = append(queue.Instructions, instruction)
+}
+
+func main() {
+	if !Start(4001) {
+		return
+	}
+
+	// Test only
+
+	SubmitQueue()
 }
