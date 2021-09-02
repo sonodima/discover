@@ -12,7 +12,6 @@
 
 After hooking the target process, Discord initializes an Electron window that loads a URL similar to this `https://discord.com/overlay?build_id=x&rpc=y&rpc_auth_token=z&pid=w`
 <br>
-It then copies the frame buffer from this window and draws it over the game's window.
 Then it copies this window's frame buffer and draws it on the game window.
 
 By having Discord load a locally hosted WebGL 2.0 renderer, we can communicate with it to draw on games and (potentially) get keyboard input.
