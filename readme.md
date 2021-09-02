@@ -6,7 +6,7 @@
 
 ### Proof of concept
 
-![could not load the poc](https://github.com/sonodima/discover/media/poc.gif)
+![could not load the poc](/media/poc.gif?raw=true)
 
 # Wait what?
 
