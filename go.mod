@@ -1,4 +1,4 @@
-module github.com/sonodima/dicrod
+module github.com/sonodima/discover
 
 go 1.16
 

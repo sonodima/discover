@@ -40,7 +40,7 @@ func Start(port int) bool {
 	queue = &RenderQueue{}
 
 	app := fiber.New()
-	app.Static("/", "./renderer/dist")
+	app.Static("/", "./dist")
 
 	app.Use("/ws", upgradeHandler)
 	app.Get("/ws/queue", websocket.New(queueHandler))
@@ -50,11 +50,11 @@ func Start(port int) bool {
 	/*
 		err := app.Listen(fmt.Sprintf(":%d", port))
 		if err != nil {
-			fmt.Println("[dicrod]", err.Error())
+			fmt.Println("[discover]", err.Error())
 			return false
 		}
 
-		fmt.Println("[dicrod] server listening on port ", port)
+		fmt.Println("[discover] server listening on port ", port)
 	*/
 
 	return true
@@ -68,13 +68,13 @@ func SubmitQueue() bool {
 
 	marshaled, err := json.Marshal(queue)
 	if err != nil {
-		fmt.Println("[dicord]", err)
+		fmt.Println("[discover]", err)
 		return false
 	}
 
 	err = connection.WriteMessage(1, marshaled)
 	if err != nil {
-		fmt.Println("[dicord]", err)
+		fmt.Println("[discover]", err)
 		connection = nil
 		return false
 	}

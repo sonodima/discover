@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DicrodSharp", "DicrodSharp\DicrodSharp.csproj", "{CB4EBB90-E364-4B45-AF85-DDBE6AA2CB86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscoverSharp", "DiscoverSharp\DiscoverSharp.csproj", "{CB4EBB90-E364-4B45-AF85-DDBE6AA2CB86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

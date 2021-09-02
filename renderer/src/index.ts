@@ -95,9 +95,9 @@ const drawCircle = (graphics: PIXI.Graphics, data: CircleInstruction) => {
   }
 };
 
-const connect = async () => {
-  let socket: WebSocket;
+let socket: WebSocket | undefined;
 
+const connect = async () => {
   await new Promise((resolve) => {
     socket = new WebSocket("ws://localhost:4001/ws/queue");
 
@@ -108,6 +108,7 @@ const connect = async () => {
 
     socket.addEventListener("close", async () => {
       app.stage.removeChildren();
+      socket = undefined;
       await sleep(1000);
       connect();
       resolve(false);
@@ -115,6 +116,7 @@ const connect = async () => {
 
     socket.addEventListener("error", async () => {
       app.stage.removeChildren();
+      socket = undefined;
       await sleep(1000);
       connect();
       resolve(false);
