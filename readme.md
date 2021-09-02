@@ -2,7 +2,7 @@
 <p>
 </p>
 
-> Internal Discord drawing, externally. (very external, you can even use a different device to draw to the target one)
+> Internal Discord drawing, externally. (very externally, you can even use a different device to draw on the target one)
 
 ### Proof of concept
 
@@ -10,11 +10,12 @@
 
 # Wait what?
 
-After hooking the target process, Discord initializes an Electron window that loads a URL that looks something like this `https://discord.com/overlay?build_id=x&rpc=y&rpc_auth_token=z&pid=w`
+After hooking the target process, Discord initializes an Electron window that loads a URL similar to this `https://discord.com/overlay?build_id=x&rpc=y&rpc_auth_token=z&pid=w`
 <br>
 It then copies the frame buffer from this window and draws it over the game's window.
+Then it copies this window's frame buffer and draws it on the game window.
 
-By making Discord load a local hosted WebGL 2.0 renderer, we can communicate with it in order to draw over games and (potentially) get keyboard inputs.
+By having Discord load a locally hosted WebGL 2.0 renderer, we can communicate with it to draw on games and (potentially) get keyboard input.
 
 # Setup
 
@@ -40,9 +41,8 @@ function createRenderer(pid, url) {
   ...
 }
 ```
-
-In the CSharp project there is a method that automatically patches Discord with the given IP address and port.
-To unpatch it (and restore the original overlay) you only have to remove the `url = "xxx";` line from `host.js`.
+In the CSharp project, there is a method that automatically patches Discord with a given IP address and port.
+To unpatch it (and restore the original overlay) you just have to remove the `url = "xxx";` line from `host.js`.
 
 ## Proxying the requests
 
@@ -52,7 +52,7 @@ This is the recommended method because you are not touching Discord's files, and
 
 You can build this project on either Windows or Linux.
 <br>
-The shared library build allows you to use it inside your existing projects. An example of how to use it this way is DiscoverSharp inside of the bindings folder.
+The shared library build allows you to use it within your existing projects. An example of how to use it this way is DiscoverSharp inside the bindings folder.
 
 ### Prerequisites
 
