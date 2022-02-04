@@ -32,9 +32,6 @@ const initializeRenderer = (): boolean => {
     return true;
 }
 
-const resize = () => {
-
-}
 
 
 initializeRenderer();

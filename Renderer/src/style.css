@@ -21,8 +21,9 @@ body {
     padding: 8px 10px;
     border-radius: 12px;
     overflow: hidden;
+    opacity: 0;
     background: #21212190;
-    transition: opacity linear .3s;
+    transition: opacity linear .2s;
 }
 
 .log-container .log-content {
