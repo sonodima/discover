@@ -1,15 +1,11 @@
 import Log from "./Log";
 import Renderer from "./lib/Renderer";
+import sleep from "./utils/sleep";
 
 import { LogEventData, SocEvent, SocEventType, TickEventData } from "./types/events";
 import { InstructionType, RectangleInstructionData, StringInstructionData } from "./types/instructions";
 
 import "./style.css"
-
-
-
-const sourcePath = "ws://localhost:3484/connector";
-
 
 
 const log = new Log();
@@ -18,38 +14,16 @@ log.write("local", "Logger allocated")
 const renderer = new Renderer();
 log.write("local", "Renderer initialized")
 
-const socket = new WebSocket(sourcePath);
+connect();
 
-socket.addEventListener("open", () => {
-    log.write("local", "Remote connection created")
-});
 
-socket.addEventListener("error", () => {
-    log.write("local", "An error occurred while attempting to connect")
-});
-
-socket.addEventListener("message", (event: MessageEvent<SocEvent>) => {
-
-    console.log(event.data);
-
-    switch (event.data.type) {
-        case SocEventType.Log:
-            handleLogEvent(event);
-            break;
-
-        case SocEventType.Tick:
-            handleTickEvent(event);
-            break;
-    }
-});
-
-const handleLogEvent = (event: MessageEvent<SocEvent>) => {
-    const data = event.data.data as LogEventData;
+function handleLogEvent(event: SocEvent) {
+    const data = event.data as LogEventData;
     log.write("remote", data.content);
 }
 
-const handleTickEvent = (event: MessageEvent<SocEvent>) => {
-    const data = event.data.data as TickEventData;
+function handleTickEvent(event: SocEvent) {
+    const data = event.data as TickEventData;
 
     data.instructions.forEach((instruction) => {
         switch (instruction.type) {
@@ -63,3 +37,46 @@ const handleTickEvent = (event: MessageEvent<SocEvent>) => {
         }
     });
 }
+
+
+let socket: WebSocket | undefined;
+async function connect() {
+    await new Promise((resolve) => {
+        socket = new WebSocket("ws://localhost:3484/connector");
+
+        socket.onopen = () => {
+            log.write("local", "Remote connection created");
+            resolve(true);
+        };
+
+        socket.onclose = async () => {
+            log.write("local", "The connection was closed by the remote");
+            await sleep(1000);
+            connect();
+            resolve(false);
+        };
+
+        socket.onerror = async () => {
+            log.write("local", "An error occurred while attempting to connect");
+            await sleep(1000);
+            connect();
+            resolve(false);
+        };
+
+        socket.onmessage = (ev) => {
+            console.log(ev);
+
+            const socEvent = JSON.parse(ev.data) as SocEvent;
+
+            switch (socEvent.type) {
+                case SocEventType.Log:
+                    handleLogEvent(socEvent);
+                    break;
+
+                case SocEventType.Tick:
+                    handleTickEvent(socEvent);
+                    break;
+            }
+        };
+    });
+};

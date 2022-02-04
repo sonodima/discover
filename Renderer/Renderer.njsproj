@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\lib\" />
+    <Folder Include="src\utils\" />
     <Folder Include="src\types\" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +72,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\types\vite-env.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\utils\sleep.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>
