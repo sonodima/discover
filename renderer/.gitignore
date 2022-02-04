@@ -1,8 +1,9 @@
-/node_modules
-/dist
+node_modules
 .DS_Store
-*.log
-.vscode
-.cache
-.eslintcache
-package-lock.json
+dist
+dist-ssr
+bin
+obj
+
+*.local
+*.user
