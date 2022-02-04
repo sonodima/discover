@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\lib\" />
+    <Folder Include="src\types\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\lib\FontCache.ts">
@@ -63,7 +64,7 @@
     <TypeScriptCompile Include="src\lib\Renderer.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\vite-env.d.ts">
+    <TypeScriptCompile Include="src\types\vite-env.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>

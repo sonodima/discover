@@ -8,12 +8,12 @@ class Log {
         this.container.classList.add('log-container');
 
         const title = document.createElement('span');
-        title.classList.add("log-title");
-        title.textContent = "Discover Log";
+        title.classList.add('log-title');
+        title.textContent = 'Discover Log';
         this.container.appendChild(title);
 
         this.content = document.createElement('span');
-        this.content.classList.add("log-content");
+        this.content.classList.add('log-content');
         this.container.appendChild(this.content);
 
         document.querySelector<HTMLDivElement>('#app')?.appendChild(this.container);

@@ -1,6 +1,6 @@
-import { Application, BitmapText } from 'pixi.js'
+import { Application, BitmapText, Graphics } from 'pixi.js'
 
-import FontCache from "./FontCache";
+import FontCache from './FontCache';
 
 class Renderer {
     private app: Application;
@@ -17,29 +17,39 @@ class Renderer {
         document.querySelector<HTMLDivElement>('#app')?.appendChild(this.app.view);
     }
 
-    drawString(content: string, family: string, fill: number, x: number, y: number, size: number) {
-        this.fontCache.handle(family, fill, size);
+    drawString(content: string, family: string, color: number, x: number, y: number, size: number) {
+        this.fontCache.handle(family, color, size);
 
         const text = new BitmapText(content, {
-            fontName: this.fontCache.calculateId(family, fill, size),
+            fontName: this.fontCache.calculateId(family, color, size),
         });
         text.position.set(x, y);
 
         this.app.stage.addChild(text);
     }
 
-    test() {
+    drawRect(x: number, y: number, width: number, height: number, color: number,
+        fill: boolean = true, thickness: number = 2, radius: number = 0, alpha: number = 1) {
+        var graphics = new Graphics(); // todo create only one instance of graphics per instruction list
 
-        this.app.stage.removeChildren();
-
-        for (var i = 0; i < 1; i++) {
-            this.drawString("Hello World", "Arial", 0xffff00, 500 * Math.random(), 500 * Math.random(), 32);
-
-            this.drawString("Hello World", "Impact", 0xff0000, 500 * Math.random(), 500 * Math.random(), 32);
+        if (fill) {
+            graphics.beginFill(color, alpha);
+            graphics.lineStyle(0);
+        } else {
+            graphics.lineStyle(thickness, color, alpha);
         }
 
+        if (radius > 0) {
+            graphics.drawRoundedRect(x, y, width, height, radius);
+        } else {
+            graphics.drawRect(x, y, width, height);
+        }
 
+        if (fill) {
+            graphics.endFill();
+        }
 
+        this.app.stage.addChild(graphics);
     }
 }
 

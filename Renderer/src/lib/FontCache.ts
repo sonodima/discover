@@ -7,16 +7,16 @@ class FontCache {
         this.cachedList = [];
     }
 
-    calculateId(family: string, fill: number, size: number) {
-        return `${family}-${fill}-${size}`;
+    calculateId(family: string, color: number, size: number) {
+        return `${family}-${color}-${size}`;
     }
 
-    private registerFont(family: string, fill: number, size: number) {
-        const id = this.calculateId(family, fill, size);
+    private registerFont(family: string, color: number, size: number) {
+        const id = this.calculateId(family, color, size);
 
         BitmapFont.from(id, {
             fontFamily: family,
-            fill: fill,
+            fill: color,
             fontSize: size
         }, {
             chars: BitmapFont.ALPHA
@@ -25,11 +25,11 @@ class FontCache {
         this.cachedList.push(id);
     }
 
-    handle(family: string, fill: number, size: number) {
-        const id = this.calculateId(family, fill, size);
+    handle(family: string, color: number, size: number) {
+        const id = this.calculateId(family, color, size);
 
         if (!this.cachedList.includes(id)) {
-            this.registerFont(family, fill, size);
+            this.registerFont(family, color, size);
         }
     }
 }

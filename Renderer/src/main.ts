@@ -7,7 +7,7 @@ import './style.css'
 const log = new Log();
 
 const renderer = new Renderer();
-log.write("local", "Renderer initialized")
+log.write('local', 'Renderer initialized')
 
 renderer.test();
 
