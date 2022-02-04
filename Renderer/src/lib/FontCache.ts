@@ -1,4 +1,4 @@
-import { BitmapFont } from 'pixi.js'
+import { BitmapFont } from "pixi.js"
 
 class FontCache {
     private cachedList: string[];
@@ -7,15 +7,15 @@ class FontCache {
         this.cachedList = [];
     }
 
-    calculateId(family: string, color: number, size: number) {
-        return `${family}-${color}-${size}`;
+    calculateId(font: string, color: number, size: number) {
+        return `${font}-${color}-${size}`;
     }
 
-    private registerFont(family: string, color: number, size: number) {
-        const id = this.calculateId(family, color, size);
+    private registerFont(font: string, color: number, size: number) {
+        const id = this.calculateId(font, color, size);
 
         BitmapFont.from(id, {
-            fontFamily: family,
+            fontFamily: font,
             fill: color,
             fontSize: size
         }, {
@@ -25,11 +25,11 @@ class FontCache {
         this.cachedList.push(id);
     }
 
-    handle(family: string, color: number, size: number) {
-        const id = this.calculateId(family, color, size);
+    handle(font: string, color: number, size: number) {
+        const id = this.calculateId(font, color, size);
 
         if (!this.cachedList.includes(id)) {
-            this.registerFont(family, color, size);
+            this.registerFont(font, color, size);
         }
     }
 }

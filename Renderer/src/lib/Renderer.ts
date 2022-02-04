@@ -1,6 +1,8 @@
-import { Application, BitmapText, Graphics } from 'pixi.js'
+import { Application, BitmapText, Graphics } from "pixi.js"
 
-import FontCache from './FontCache';
+import FontCache from "./FontCache";
+
+import type { StringInstruction, RectangleInstruction } from "../types/instructions";
 
 class Renderer {
     private app: Application;
@@ -14,38 +16,37 @@ class Renderer {
 
         this.fontCache = new FontCache();
 
-        document.querySelector<HTMLDivElement>('#app')?.appendChild(this.app.view);
+        document.querySelector<HTMLDivElement>("#app")?.appendChild(this.app.view);
     }
 
-    drawString(content: string, family: string, color: number, x: number, y: number, size: number) {
-        this.fontCache.handle(family, color, size);
+    drawString(data: StringInstruction) {
+        this.fontCache.handle(data.font, data.color, data.size);
 
-        const text = new BitmapText(content, {
-            fontName: this.fontCache.calculateId(family, color, size),
+        const text = new BitmapText(data.content, {
+            fontName: this.fontCache.calculateId(data.font, data.color, data.size),
         });
-        text.position.set(x, y);
+        text.position.set(data.x, data.y);
 
         this.app.stage.addChild(text);
     }
 
-    drawRect(x: number, y: number, width: number, height: number, color: number,
-        fill: boolean = true, thickness: number = 2, radius: number = 0, alpha: number = 1) {
+    drawRect(data: RectangleInstruction) {
         var graphics = new Graphics(); // todo create only one instance of graphics per instruction list
 
-        if (fill) {
-            graphics.beginFill(color, alpha);
+        if (data.fill) {
+            graphics.beginFill(data.color, data.alpha);
             graphics.lineStyle(0);
         } else {
-            graphics.lineStyle(thickness, color, alpha);
+            graphics.lineStyle(data.thickness, data.color, data.alpha);
         }
 
-        if (radius > 0) {
-            graphics.drawRoundedRect(x, y, width, height, radius);
+        if (data.radius > 0) {
+            graphics.drawRoundedRect(data.x, data.y, data.width, data.height, data.radius);
         } else {
-            graphics.drawRect(x, y, width, height);
+            graphics.drawRect(data.x, data.y, data.width, data.height);
         }
 
-        if (fill) {
+        if (data.fill) {
             graphics.endFill();
         }
 

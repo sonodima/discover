@@ -64,6 +64,12 @@
     <TypeScriptCompile Include="src\lib\Renderer.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\types\events.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\types\instructions.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\types\vite-env.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
