@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Net;
-using System.Text;
+using System.Text.Json;
 using WebSocketSharp.Server;
 
 namespace Discover.Net
@@ -37,9 +37,16 @@ namespace Discover.Net
             }
         }
 
-        internal void Send(string data)
+        internal void Send(object data)
         {
-            _http.WebSocketServices["/connector"].Sessions.Broadcast(data);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            var raw = JsonSerializer.Serialize(data, options);
+
+            _http.WebSocketServices["/connector"].Sessions.Broadcast(raw);
         }
 
         private void Server_OnGet(object sender, HttpRequestEventArgs e)

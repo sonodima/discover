@@ -19,6 +19,7 @@
             public string Content { get; set; }
             public string Font { get; set; }
             public int Color { get; set; }
+            public float Alpha { get; set; }
             public int X { get; set; }
             public int Y { get; set; }
             public int Size { get; set; }
@@ -31,6 +32,7 @@
             public int Width { get; set; }
             public int Height { get; set; }
             public int Color { get; set; }
+            public float Alpha { get; set; }
             public bool Fill { get; set; }
             public int Thickness { get; set; }
             public int Radius { get; set; }

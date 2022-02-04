@@ -1,58 +1,25 @@
-﻿using System.Net;
-using System.Linq;
-using System.Text;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using WebSocketSharp;
-using WebSocketSharp.Server;
-using System.IO;
-using System.Text.Json;
-using System.Reflection;
-using System.IO.Compression;
-
-using Discover.Net;
-using Discover.Utils;
-using static Discover.Types.Events;
+﻿using System.Threading;
 
 namespace Discover
 {
-
     public class Discover
     {
         public void Test()
         {
-            var systemTemp = Path.GetTempPath();
-            var tempPath = Path.Combine(systemTemp, "Discover");
-            if (!Directory.Exists(tempPath))
-            {
-                Directory.CreateDirectory(tempPath);
-            }
+            var renderer = new Renderer();
 
-            var stream = Resource.GetStream("renderer.zip");
-            LazyExtractor.ExtractZipFromStream(stream, tempPath);
-
-            Server server = new Server(3484, Path.Combine(tempPath, "dist"));
-            server.Start();
-
+            int i = 0;
             while (true)
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                };
-                var raw = JsonSerializer.Serialize(new SocEvent()
-                {
-                    Type = SocEventType.Log,
-                    Data = new LogEventData()
-                    {
-                        Content = "Hello World"
-                    }
-                }, options);
+                renderer.DrawRectangle(new System.Drawing.Rectangle(i++, 10, 50, 50), System.Drawing.Color.Red);
+                renderer.Present();
 
-                server.Send(raw);
+                if (i == 1000)
+                {
+                    i = 0;
+                }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(6);
             }
         }
     }

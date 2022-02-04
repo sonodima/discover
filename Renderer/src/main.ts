@@ -23,6 +23,7 @@ function handleLogEvent(event: SocEvent) {
 function handleTickEvent(event: SocEvent) {
     const data = event.data as TickEventData;
 
+    renderer.clear();
     data.instructions.forEach((instruction) => {
         switch (instruction.type) {
             case InstructionType.String:
@@ -56,7 +57,6 @@ const connect = async () => {
         socket.onerror = async () => {
             log.write("local", "An error occurred while attempting to connect");
             await sleep(1000);
-            socket?.close();
             connect();
             resolve(false);
         };

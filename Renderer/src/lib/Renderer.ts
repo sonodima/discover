@@ -26,6 +26,7 @@ class Renderer {
             fontName: this.fontCache.calculateId(data.font, data.color, data.size),
         });
         text.position.set(data.x, data.y);
+        text.alpha = data.alpha;
 
         this.app.stage.addChild(text);
     }
@@ -51,6 +52,10 @@ class Renderer {
         }
 
         this.app.stage.addChild(graphics);
+    }
+
+    clear() {
+        this.app.stage.removeChildren();
     }
 }
 

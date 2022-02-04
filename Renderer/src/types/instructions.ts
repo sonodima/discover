@@ -12,6 +12,7 @@ interface StringInstructionData {
     content: string;
     font: string;
     color: number;
+    alpha: number;
     x: number;
     y: number;
     size: number;
@@ -23,10 +24,10 @@ interface RectangleInstructionData {
     width: number;
     height: number;
     color: number;
+    alpha: number;
     fill: boolean;
     thickness: number;
     radius: number;
-    alpha: number;
 }
 
 export {
