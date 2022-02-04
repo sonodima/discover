@@ -40,7 +40,7 @@ function handleTickEvent(event: SocEvent) {
 let socket: WebSocket | undefined;
 const connect = async () => {
     await new Promise((resolve) => {
-        socket = new WebSocket("ws://localhost:3484/connector");
+        socket = new WebSocket(`ws://${location.host}/connector`);
 
         socket.onopen = () => {
             log.write("local", "Remote connection created");

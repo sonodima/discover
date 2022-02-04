@@ -3,7 +3,9 @@
 using Discover;
 using Example;
 
-var renderer = new Renderer();
+var renderer = new Renderer(18842);
+
+renderer.WriteLog("Hello from Discover.Net");
 
 while (true)
 {

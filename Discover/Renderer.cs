@@ -15,7 +15,7 @@ namespace Discover
         private readonly List<Instruction> _instructions;
         private readonly Server _server;
 
-        public Renderer()
+        public Renderer(int port)
         {
             _instructions = new List<Instruction>();
 
@@ -29,7 +29,7 @@ namespace Discover
             var stream = Resource.GetStream("renderer.zip");
             LazyExtractor.ExtractZipFromStream(stream, tempPath);
 
-            _server = new Server(3484, Path.Combine(tempPath, "dist"));
+            _server = new Server(port, Path.Combine(tempPath, "dist"));
             _server.Start();
         }
 
@@ -91,6 +91,18 @@ namespace Discover
             });
 
             _instructions.Clear();
+        }
+
+        public void WriteLog(string content)
+        {
+            _server.Send(new SocEvent()
+            {
+                Type = SocEventType.Log,
+                Data = new LogEventData()
+                {
+                    Content = content
+                }
+            });
         }
 
         private static int ConvertColor(Color color) {
