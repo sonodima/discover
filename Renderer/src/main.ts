@@ -14,8 +14,6 @@ log.write("local", "Logger allocated")
 const renderer = new Renderer();
 log.write("local", "Renderer initialized")
 
-connect();
-
 
 function handleLogEvent(event: SocEvent) {
     const data = event.data as LogEventData;
@@ -38,9 +36,8 @@ function handleTickEvent(event: SocEvent) {
     });
 }
 
-
 let socket: WebSocket | undefined;
-async function connect() {
+const connect = async () => {
     await new Promise((resolve) => {
         socket = new WebSocket("ws://localhost:3484/connector");
 
@@ -59,14 +56,13 @@ async function connect() {
         socket.onerror = async () => {
             log.write("local", "An error occurred while attempting to connect");
             await sleep(1000);
+            socket?.close();
             connect();
             resolve(false);
         };
 
-        socket.onmessage = (ev) => {
-            console.log(ev);
-
-            const socEvent = JSON.parse(ev.data) as SocEvent;
+        socket.onmessage = (event: MessageEvent<string>) => {
+            const socEvent = JSON.parse(event.data) as SocEvent;
 
             switch (socEvent.type) {
                 case SocEventType.Log:
@@ -80,3 +76,5 @@ async function connect() {
         };
     });
 };
+
+connect();

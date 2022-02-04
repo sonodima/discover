@@ -39,8 +39,7 @@ namespace Discover.Net
 
         internal void Send(string data)
         {
-            var bytes = Encoding.UTF8.GetBytes(data);
-            _http.WebSocketServices["/connector"].Sessions.Broadcast(bytes);
+            _http.WebSocketServices["/connector"].Sessions.Broadcast(data);
         }
 
         private void Server_OnGet(object sender, HttpRequestEventArgs e)
