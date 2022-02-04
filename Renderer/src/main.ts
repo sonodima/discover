@@ -1,7 +1,7 @@
 import Log from "./Log";
 import Renderer from "./lib/Renderer";
 
-import type { LogEventData, UpdateEventData } from "./types/events";
+import type { LogEventData, TickEventData } from "./types/events";
 import { InstructionType, RectangleInstruction, StringInstruction } from "./types/instructions";
 
 import "./style.css"
@@ -32,9 +32,9 @@ source.addEventListener("log", (event) => {
     log.write("remote", data.content);
 });
 
-source.addEventListener("update", (event) => {
+source.addEventListener("tick", (event) => {
     const message = event as MessageEvent;
-    const data = JSON.parse(message.data) as UpdateEventData;
+    const data = JSON.parse(message.data) as TickEventData;
 
     data.instructions.forEach((instruction) => {
         switch (instruction.type) {

@@ -4,11 +4,11 @@ interface LogEventData {
     content: string;
 }
 
-interface UpdateEventData {
+interface TickEventData {
     instructions: Instruction[]
 }
 
 export {
     LogEventData,
-    UpdateEventData
+    TickEventData
 }
