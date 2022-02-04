@@ -1,7 +1,7 @@
 class Log {
     private container: HTMLDivElement;
     private content: HTMLSpanElement;
-    private closeTimeout: NodeJS.Timeout;
+    private closeTimeout: NodeJS.Timeout | undefined;
 
     constructor() {
         this.container = document.createElement('div');
@@ -22,8 +22,11 @@ class Log {
     write(source: 'local' | 'remote',  message: string) {
         this.content.innerText = `[${source}] ${message}\n${this.content.innerText}`;
 
+        if (this.closeTimeout) {
+            clearTimeout(this.closeTimeout);
+        }
+
         this.show();
-        clearTimeout(this.closeTimeout);
         this.closeTimeout = setTimeout(() => {
             this.hide();
         }, 5000);
