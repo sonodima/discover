@@ -1,8 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/sonodima/discover</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sonodima/discover</RepositoryUrl>
+    <PackageTags>rendering, graphics, discord, hijack</PackageTags>
   </PropertyGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="call package.bat" />
+  </Target>
+
+  <ItemGroup>
+	<EmbeddedResource Include="renderer.zip">
+	  <Visible>false</Visible>
+	</EmbeddedResource>
+  </ItemGroup>
+	
 </Project>
