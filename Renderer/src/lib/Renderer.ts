@@ -2,7 +2,7 @@ import { Application, BitmapText, Graphics } from "pixi.js"
 
 import FontCache from "./FontCache";
 
-import type { StringInstruction, RectangleInstruction } from "../types/instructions";
+import type { StringInstructionData, RectangleInstructionData } from "../types/instructions";
 
 class Renderer {
     private app: Application;
@@ -19,7 +19,7 @@ class Renderer {
         document.querySelector<HTMLDivElement>("#app")?.appendChild(this.app.view);
     }
 
-    drawString(data: StringInstruction) {
+    drawString(data: StringInstructionData) {
         this.fontCache.handle(data.font, data.color, data.size);
 
         const text = new BitmapText(data.content, {
@@ -30,7 +30,7 @@ class Renderer {
         this.app.stage.addChild(text);
     }
 
-    drawRect(data: RectangleInstruction) {
+    drawRect(data: RectangleInstructionData) {
         var graphics = new Graphics(); // todo create only one instance of graphics per instruction list
 
         if (data.fill) {

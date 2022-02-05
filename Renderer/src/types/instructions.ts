@@ -8,7 +8,7 @@ interface Instruction {
     data: any;
 }
 
-interface StringInstruction {
+interface StringInstructionData {
     content: string;
     font: string;
     color: number;
@@ -17,7 +17,7 @@ interface StringInstruction {
     size: number;
 }
 
-interface RectangleInstruction {
+interface RectangleInstructionData {
     x: number;
     y: number;
     width: number;
@@ -32,6 +32,6 @@ interface RectangleInstruction {
 export {
     InstructionType,
     Instruction,
-    StringInstruction,
-    RectangleInstruction
+    StringInstructionData,
+    RectangleInstructionData
 }
