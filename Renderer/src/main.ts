@@ -6,7 +6,11 @@ import { InstructionType, RectangleInstruction, StringInstruction } from "./type
 
 import "./style.css"
 
-const sourcePath = "//localhost:3484/connector";
+// const sourcePath = "//localhost:3484/connector";
+
+
+const sourcePath = "ws://localhost:3484/connector";
+
 
 
 const log = new Log();
@@ -15,24 +19,24 @@ log.write("local", "Logger allocated")
 const renderer = new Renderer();
 log.write("local", "Renderer initialized")
 
-const source = new EventSource(sourcePath);
+const socket = new WebSocket(sourcePath);
 
-source.addEventListener("open", () => {
+socket.addEventListener("open", () => {
     log.write("local", "Remote connection created")
 });
 
-source.addEventListener("error", () => {
+socket.addEventListener("error", () => {
     log.write("local", "An error occurred while attempting to connect")
 });
 
-source.addEventListener("log", (event) => {
+socket.addEventListener("log", (event) => {
     const message = event as MessageEvent;
     const data = JSON.parse(message.data) as LogEventData;
 
     log.write("remote", data.content);
 });
 
-source.addEventListener("tick", (event) => {
+socket.addEventListener("tick", (event) => {
     const message = event as MessageEvent;
     const data = JSON.parse(message.data) as TickEventData;
 
