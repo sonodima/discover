@@ -11,15 +11,10 @@ while (true)
 {
     var mouse = User32.GetCursorPosition();
 
-    for (int i = -500; i <= 500; i += 100)
-    {
-        for (int j = -500; j <= 500; j += 100)
-        {
-            renderer.DrawString("Speed", "Arial", Color.Black, new Point(mouse.X + i, mouse.Y + j));
-        }
-    }
+    renderer.DrawString("Speed", "Arial", Color.Black, new Point(mouse.X, mouse.Y));
+
 
     renderer.Present();
 
-    Thread.Sleep(6);
+    Thread.Sleep(4);
 }

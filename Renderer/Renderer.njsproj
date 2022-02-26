@@ -36,6 +36,9 @@
     <Content Include=".gitignore">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="assets\injectors\nvshare.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="index.html">
       <SubType>Code</SubType>
     </Content>
@@ -45,8 +48,13 @@
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="vite.config.js">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="assets\" />
+    <Folder Include="assets\injectors\" />
     <Folder Include="src\" />
     <Folder Include="src\lib\" />
     <Folder Include="src\utils\" />
@@ -56,7 +64,7 @@
     <TypeScriptCompile Include="src\lib\FontCache.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\Log.ts">
+    <TypeScriptCompile Include="src\utils\Log.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\main.ts">

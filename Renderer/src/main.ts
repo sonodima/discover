@@ -1,4 +1,4 @@
-import Log from "./Log";
+import Log from "./utils/Log";
 import Renderer from "./lib/Renderer";
 import sleep from "./utils/sleep";
 
@@ -9,7 +9,7 @@ import "./style.css"
 
 
 const log = new Log();
-log.write("local", "Logger allocated")
+log.write("local", "Logger created")
 
 const renderer = new Renderer();
 log.write("local", "Renderer initialized")
