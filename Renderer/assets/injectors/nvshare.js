@@ -69,6 +69,7 @@ button.classList.add("nv-btn");
 button.addEventListener("click", async () => {
     // Hide NVIDIA Share interface.
     body.firstElementChild.style.visibility = "hidden";
+    button.style.visibility = "hidden";
 
     // Disable input handling.
     setInterval(() => {
