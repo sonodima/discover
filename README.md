@@ -8,12 +8,6 @@
 
 ![could not load the poc](/media/poc.gif?raw=true)
 
-# Build
-
-You can build this project on either Windows or Linux.
-<br>
-The shared library build allows you to use it within your existing projects. An example of how to use it this way is DiscoverSharp inside the bindings folder.
-
 ### Prerequisites
 
 - [Rider](https://www.jetbrains.com/rider/) / [Visual Studio](https://visualstudio.microsoft.com/it/downloads/)
