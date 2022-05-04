@@ -1,6 +1,6 @@
 class Log {
-    private container: HTMLDivElement;
-    private content: HTMLSpanElement;
+    private readonly container: HTMLDivElement;
+    private readonly content: HTMLSpanElement;
     private closeTimeout: NodeJS.Timeout | undefined;
 
     constructor() {
@@ -19,7 +19,7 @@ class Log {
         document.querySelector<HTMLDivElement>("#app")?.appendChild(this.container);
     }
 
-    write(source: "local" | "remote",  message: string) {
+    write(source: "local" | "remote", message: string) {
         this.content.innerText = `[${source}] ${message}\n${this.content.innerText}`;
 
         if (this.closeTimeout) {

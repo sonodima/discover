@@ -24,7 +24,7 @@ namespace Discover.Types
 
         public struct TickEventData
         {
-            public List<Instruction> Instructions { get; set; }
+            public Queue<Instruction> Instructions { get; set; }
         }
     }
 }

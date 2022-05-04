@@ -1,12 +1,12 @@
 body {
-    margin: 0px;
+    margin: 0;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 canvas {
     position: fixed;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
 }
 
 .log-container {
@@ -26,7 +26,7 @@ canvas {
 
 .log-container .log-content {
     font-size: 13px;
-    font-weight: 400;  
+    font-weight: 400;
     color: white;
 }
 

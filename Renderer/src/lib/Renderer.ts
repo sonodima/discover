@@ -1,8 +1,8 @@
-import { Application, BitmapText, Graphics } from "pixi.js"
+import {Application, BitmapText, Graphics} from "pixi.js"
 
 import FontCache from "./FontCache";
 
-import type { StringInstructionData, RectangleInstructionData } from "../types/instructions";
+import type {RectangleInstructionData, StringInstructionData} from "../types/instructions";
 
 class Renderer {
     private app: Application;
@@ -12,7 +12,7 @@ class Renderer {
         // The application will create a renderer using WebGL, if possible,
         // with a fallback to a canvas render. It will also setup the ticker
         // and the root stage PIXI.Container.
-        this.app = new Application({ resizeTo: window, backgroundAlpha: 0, sharedTicker: false });
+        this.app = new Application({resizeTo: window, backgroundAlpha: 0, sharedTicker: false});
 
         this.fontCache = new FontCache();
 
@@ -32,7 +32,7 @@ class Renderer {
     }
 
     drawRect(data: RectangleInstructionData) {
-        var graphics = new Graphics(); // todo create only one instance of graphics per instruction list
+        const graphics = new Graphics(); // todo create only one instance of graphics per instruction list
 
         if (data.fill) {
             graphics.beginFill(data.color, data.alpha);

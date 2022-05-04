@@ -2,8 +2,8 @@ import Log from "./utils/Log";
 import Renderer from "./lib/Renderer";
 import sleep from "./utils/sleep";
 
-import { LogEventData, SocEvent, SocEventType, TickEventData } from "./types/events";
-import { InstructionType, RectangleInstructionData, StringInstructionData } from "./types/instructions";
+import {LogEventData, SocEvent, SocEventType, TickEventData} from "./types/events";
+import {InstructionType, RectangleInstructionData, StringInstructionData} from "./types/instructions";
 
 import "./style.css"
 
@@ -38,32 +38,41 @@ function handleTickEvent(event: SocEvent) {
 }
 
 let socket: WebSocket | undefined;
-const connect = async () => {
+const connect = async (printError: boolean) => {
     await new Promise((resolve) => {
         socket = new WebSocket(`ws://${location.host}/connector`);
-        
-        
+
         socket.onopen = () => {
             log.write("local", "Remote connection created");
             resolve(true);
         };
 
         socket.onclose = async () => {
-            log.write("local", "The connection was closed by the remote");
-            await sleep(1000);
-            await connect();
+            if (printError) {
+                log.write("local", "The connection was closed by the remote");
+            }
+
+            await sleep(2000);
+            await connect(true);
             resolve(false);
         };
 
         socket.onerror = async () => {
-            log.write("local", "An error occurred while attempting to connect");
-            await sleep(1000);
-            await connect();
+            if (printError) {
+                log.write("local", "An error occurred while attempting to connect");
+            }
+
+            await sleep(2000);
+            await connect(true);
             resolve(false);
         };
 
         socket.onmessage = (event: MessageEvent<string>) => {
+
+            console.log(event);
+
             const socEvent = JSON.parse(event.data) as SocEvent;
+
 
             switch (socEvent.type) {
                 case SocEventType.Log:
@@ -78,4 +87,4 @@ const connect = async () => {
     });
 };
 
-connect();
+connect(true);

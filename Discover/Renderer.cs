@@ -1,10 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Collections.Generic;
-
-using Discover.Utils;
+using System.IO;
+using System.Security;
 using Discover.Net;
-
+using Discover.Utils;
 using static Discover.Types.Events;
 using static Discover.Types.Instructions;
 
@@ -12,12 +11,16 @@ namespace Discover
 {
     public class Renderer
     {
-        private readonly List<Instruction> _instructions;
+        private readonly Queue<Instruction> _instructions;
         private readonly Server _server;
 
+        /// <summary>
+        /// </summary>
+        /// <param name="port"></param>
+        /// <exception cref="SecurityException">The caller does not have the required permissions to access the TEMP directory.</exception>
         public Renderer(int port)
         {
-            _instructions = new List<Instruction>();
+            _instructions = new Queue<Instruction>();
 
             var systemTemp = Path.GetTempPath();
             var tempPath = Path.Combine(systemTemp, "Discover");
@@ -35,7 +38,7 @@ namespace Discover
 
         public void DrawRectangle(Rectangle rect, Color color, bool fill = true, int thickness = 0, int radius = 0)
         {
-            var data = new RectangleInstructionData()
+            var data = new RectangleInstructionData
             {
                 X = rect.X,
                 Y = rect.Y,
@@ -45,21 +48,21 @@ namespace Discover
                 Alpha = color.A / 255.0f,
                 Fill = fill,
                 Thickness = thickness,
-                Radius = radius,
+                Radius = radius
             };
 
-            var instruction = new Instruction()
+            var instruction = new Instruction
             {
                 Type = InstructionType.Rectangle,
-                Data = data,
+                Data = data
             };
 
-            _instructions.Add(instruction);
+            _instructions.Enqueue(instruction);
         }
 
         public void DrawString(string content, string font, Color color, Point point, int size = 16)
         {
-            var data = new StringInstructionData()
+            var data = new StringInstructionData
             {
                 Content = content,
                 Font = font,
@@ -67,24 +70,24 @@ namespace Discover
                 Alpha = color.A / 255.0f,
                 X = point.X,
                 Y = point.Y,
-                Size = size,
+                Size = size
             };
 
-            var instruction = new Instruction()
+            var instruction = new Instruction
             {
                 Type = InstructionType.String,
-                Data = data,
+                Data = data
             };
 
-            _instructions.Add(instruction);
+            _instructions.Enqueue(instruction);
         }
 
         public void Present()
         {
-            _server.Send(new SocEvent()
+            _server.Send(new SocEvent
             {
                 Type = SocEventType.Tick,
-                Data = new TickEventData()
+                Data = new TickEventData
                 {
                     Instructions = _instructions
                 }
@@ -95,10 +98,10 @@ namespace Discover
 
         public void WriteLog(string content)
         {
-            _server.Send(new SocEvent()
+            _server.Send(new SocEvent
             {
                 Type = SocEventType.Log,
-                Data = new LogEventData()
+                Data = new LogEventData
                 {
                     Content = content
                 }
@@ -106,7 +109,7 @@ namespace Discover
         }
 
         /// <summary>
-        /// Converts a System.Drawing.Color to an integer usable by WebGL.
+        ///     Converts a System.Drawing.Color to an integer usable by WebGL.
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The converted color.</returns>

@@ -79,7 +79,7 @@ namespace Discover.Net
             };
 
             var raw = JsonSerializer.Serialize(data, options);
-            if (raw.IsNullOrEmpty())
+            if (!raw.IsNullOrEmpty())
             {
                 _http.WebSocketServices["/connector"].Sessions.Broadcast(raw);
             }

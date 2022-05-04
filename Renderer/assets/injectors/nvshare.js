@@ -26,7 +26,7 @@ async function openOSC(enableInput) {
 
 const body = document.querySelector("body");
 
-var styles = document.createElement("style");
+const styles = document.createElement("style");
 body.appendChild(styles);
 styles.innerText = `
     .nv-btn {
@@ -51,8 +51,8 @@ styles.innerText = `
     .overlay {
       display: block;
       position: absolute;
-      top: 0px;
-      left: 0px;
+      top: 0;
+      left: 0;
       margin: 0;
       border: none;
       height: 100vh;
