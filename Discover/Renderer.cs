@@ -105,6 +105,11 @@ namespace Discover
             });
         }
 
+        /// <summary>
+        /// Converts a System.Drawing.Color to an integer usable by WebGL.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The converted color.</returns>
         private static int ConvertColor(Color color)
         {
             return (color.R << 16) + (color.G << 8) + color.B;

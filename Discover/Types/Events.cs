@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-
 using static Discover.Types.Instructions;
 
 namespace Discover.Types
 {
-    public class Events
+    public static class Events
     {
         public enum SocEventType
         {
