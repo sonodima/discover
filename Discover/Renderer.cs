@@ -105,7 +105,8 @@ namespace Discover
             });
         }
 
-        private static int ConvertColor(Color color) {
+        private static int ConvertColor(Color color)
+        {
             return (color.R << 16) + (color.G << 8) + color.B;
         }
     }

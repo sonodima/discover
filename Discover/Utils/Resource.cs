@@ -8,7 +8,7 @@ namespace Discover.Utils
         internal static Stream GetStream(string name)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            return assembly.GetManifestResourceStream($"Discover.{name}");
+            return assembly.GetManifestResourceStream($"Discover.{name}")!;
         }
     }
 }

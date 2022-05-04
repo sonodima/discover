@@ -1,6 +1,6 @@
 ﻿namespace Discover.Types
 {
-    public class Instructions
+    public static class Instructions
     {
         public enum InstructionType
         {

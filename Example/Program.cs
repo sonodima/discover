@@ -16,5 +16,5 @@ while (true)
 
     renderer.Present();
 
-    Thread.Sleep(4);
+    Thread.Sleep(6);
 }

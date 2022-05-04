@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using WebSocketSharp;
 
 namespace Discover.Utils
 {
@@ -13,10 +14,15 @@ namespace Discover.Utils
             {
                 if (entry.FullName.Contains("../"))
                 {
-                    continue; // bruh
+                    continue;
                 }
 
                 var relative = Path.GetDirectoryName(entry.FullName);
+                if (relative.IsNullOrEmpty())
+                {
+                    continue;
+                }
+                
                 var absolute = Path.Combine(destination, relative);
                 if (!Directory.Exists(absolute))
                 {

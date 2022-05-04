@@ -17,11 +17,11 @@ namespace Example
         }
 
         [DllImport("user32.dll")]
-        private static extern bool GetCursorPos(out Point point);
+        private static extern bool GetCursorPos(out WinPoint point);
 
         public static Point GetCursorPosition()
         {
-            GetCursorPos(out Point point);
+            GetCursorPos(out var point);
             return point;
         }
     }

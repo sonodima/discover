@@ -41,7 +41,8 @@ let socket: WebSocket | undefined;
 const connect = async () => {
     await new Promise((resolve) => {
         socket = new WebSocket(`ws://${location.host}/connector`);
-
+        
+        
         socket.onopen = () => {
             log.write("local", "Remote connection created");
             resolve(true);
@@ -50,14 +51,14 @@ const connect = async () => {
         socket.onclose = async () => {
             log.write("local", "The connection was closed by the remote");
             await sleep(1000);
-            connect();
+            await connect();
             resolve(false);
         };
 
         socket.onerror = async () => {
             log.write("local", "An error occurred while attempting to connect");
             await sleep(1000);
-            connect();
+            await connect();
             resolve(false);
         };
 
