@@ -68,11 +68,7 @@ const connect = async (printError: boolean) => {
         };
 
         socket.onmessage = (event: MessageEvent<string>) => {
-
-            console.log(event);
-
             const socEvent = JSON.parse(event.data) as SocEvent;
-
 
             switch (socEvent.type) {
                 case SocEventType.Log:
@@ -83,6 +79,10 @@ const connect = async (printError: boolean) => {
                     handleTickEvent(socEvent);
                     break;
             }
+
+            // Acknowledge the server for each packet received.
+            // This is a workaround that should help reduce latency.
+            socket?.send("");
         };
     });
 };
